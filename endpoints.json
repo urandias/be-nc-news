@@ -25,5 +25,21 @@
         }
       ]
     }
+  },
+  "GET /api/articles/:article_id": {
+    "description": "serves an article",
+    "queries": [],
+    "exampleResponse": {
+      "article": [
+        {
+          "title": "Living in the shadow of a great man",
+          "body": "I find this existence challenging",
+          "created_by": "butter_bridge",
+          "article_id": 1,
+          "topic": "mitch",
+          "votes": 100
+        }
+      ]
+    }
   }
 }
