@@ -1,6 +1,6 @@
 const express = require('express')
 const app = express()
-const { getTopics, getApi, getArticleById, getArticles } = require('./MVC/controller.js')
+const { getTopics, getApi, getArticleById, getArticles, getCommentsByArticleId } = require('./MVC/controller.js')
 const endpoints = require('./endpoints.json')
 
 
@@ -12,6 +12,8 @@ app.get('/api/articles/:article_id', getArticleById)
 
 app.get('/api/articles', getArticles)
 
+app.get('/api/articles/:article_id/comments', getCommentsByArticleId)
+
 app.use((err, req, res, next) => {
     if (err.code === '22P02') {
         res.status(400).send({ msg: 'Invalid data type' })
@@ -19,7 +21,9 @@ app.use((err, req, res, next) => {
 })
 
 app.use((err, req, res, next) => {
-    res.status(404).send({ msg: 'Not found' })
+    if (err.status === 404) {
+        res.status(404).send({ msg: 'Not found' })
+    } else next(err)
 })
 
 app.use((err, req, res, next) => {
