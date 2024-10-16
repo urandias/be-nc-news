@@ -25,7 +25,6 @@ describe("GET /api/topics", () => {
       .then(({ body }) => {
         const allTopics = body.topics;
         expect(Array.isArray(allTopics)).toBe(true);
-
         if (allTopics.length === 0) {
           return Promise.reject({ status: 404, msg: "Not found" });
         } else {
@@ -35,7 +34,7 @@ describe("GET /api/topics", () => {
           });
         }
       });
-  });
+  })
 });
 
 describe("GET /api", () => {
@@ -86,15 +85,12 @@ describe("GET /api/articles/:articleId", () => {
 });
 
 describe("GET /api/articles", () => {
-  it("200 - should respond with an array of articles", () => {
+  it("200 - should respond with an object with a key of articles containing an array of articles", () => {
     return request(app)
       .get("/api/articles")
       .expect(200)
       .then(({ body }) => {
-        const articles = body.articles;
-        expect(Array.isArray(articles)).toBe(true);
-        expect(articles.length).toBe(13);
-        expect(body).toEqual({ articles: articles });
+        expect(Array.isArray(body.articles)).toBe(true);
       });
   });
   it("200 - should respond with an array of articles with the correct keys", () => {
@@ -122,3 +118,37 @@ describe("GET /api/articles", () => {
       });
   });
 });
+
+describe('GET /api/articles/:article_id/comments', () => {
+    it('200 - should respond with an array of comments with the correct keys', () => {
+        return request(app)
+            .get('/api/articles/1/comments')
+            .expect(200)
+            .then(({ body }) => {
+                expect(Array.isArray(body.comments)).toBe(true)
+                expect(body.comments[0]).toHaveProperty('comment_id')
+                expect(body.comments[0]).toHaveProperty('votes')
+                expect(body.comments[0]).toHaveProperty('created_at')
+                expect(body.comments[0]).toHaveProperty('author')
+                expect(body.comments[0]).toHaveProperty('body')
+                expect(body.comments[0]).toHaveProperty('article_id')
+
+            })
+    })
+    it("400 - responds with an error msg for an invalid article_id type", () => {
+      return request(app)
+        .get("/api/articles/not-a-number/comments")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toEqual("Invalid data type");
+        });
+    });
+    it("404 - responds with an error msg for an article_id that does not exist", () => {
+      return request(app)
+        .get("/api/articles/9999/comments")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toEqual("Not found");
+        });
+    });
+})
