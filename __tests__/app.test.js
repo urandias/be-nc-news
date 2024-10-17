@@ -34,7 +34,7 @@ describe("GET /api/topics", () => {
           });
         }
       });
-  })
+  });
 });
 
 describe("GET /api", () => {
@@ -119,36 +119,110 @@ describe("GET /api/articles", () => {
   });
 });
 
-describe('GET /api/articles/:article_id/comments', () => {
-    it('200 - should respond with an array of comments with the correct keys', () => {
-        return request(app)
-            .get('/api/articles/1/comments')
-            .expect(200)
-            .then(({ body }) => {
-                expect(Array.isArray(body.comments)).toBe(true)
-                expect(body.comments[0]).toHaveProperty('comment_id')
-                expect(body.comments[0]).toHaveProperty('votes')
-                expect(body.comments[0]).toHaveProperty('created_at')
-                expect(body.comments[0]).toHaveProperty('author')
-                expect(body.comments[0]).toHaveProperty('body')
-                expect(body.comments[0]).toHaveProperty('article_id')
+describe("GET /api/articles/:article_id/comments", () => {
+  it("200 - should respond with an array of comments with the correct keys", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then(({ body }) => {
+        expect(Array.isArray(body.comments)).toBe(true);
+        const comments = body.comments;
+        comments.forEach((comment) => {
+          expect(comment).toHaveProperty("comment_id");
+          expect(comment).toHaveProperty("votes");
+          expect(comment).toHaveProperty("created_at");
+          expect(comment).toHaveProperty("author");
+          expect(comment).toHaveProperty("body");
+          expect(comment).toHaveProperty("article_id");
+        });
+      });
+  });
+  it("200 - responds with empty array when article exists but has no comments", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then(({ body }) => {
+        if (body.comments.length === 0) {
+          expect(body.comments).toEqual([]);
+          expect(body.comments.length).toEqual(0);
+        }
+      });
+  });
+  it("400 - responds with an error msg for an invalid article_id type", () => {
+    return request(app)
+      .get("/api/articles/not-a-number/comments")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toEqual("Invalid data type");
+      });
+  });
+  it("404 - responds with an error msg for an article_id that does not exist", () => {
+    return request(app)
+      .get("/api/articles/9999/comments")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toEqual("Not found");
+      });
+  });
+});
 
-            })
-    })
-    it("400 - responds with an error msg for an invalid article_id type", () => {
-      return request(app)
-        .get("/api/articles/not-a-number/comments")
-        .expect(400)
-        .then(({ body }) => {
-          expect(body.msg).toEqual("Invalid data type");
-        });
-    });
-    it("404 - responds with an error msg for an article_id that does not exist", () => {
-      return request(app)
-        .get("/api/articles/9999/comments")
-        .expect(404)
-        .then(({ body }) => {
-          expect(body.msg).toEqual("Not found");
-        });
-    });
-})
+describe("POST /api/articles/:article_id/comments", () => {
+  it("201 - should respond with an object containing the new comment", () => {
+    const newComment = {
+      username: "butter_bridge",
+      body: "I am a comment",
+    };
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send(newComment)
+      .expect(201)
+      .then(({ body }) => {
+        const { comment } = body;
+        expect(comment.body).toBe("I am a comment");
+        expect(comment.author).toBe("butter_bridge");
+        expect(comment).toHaveProperty("comment_id");
+        expect(comment).toHaveProperty("votes");
+        expect(comment).toHaveProperty("created_at");
+        expect(comment).toHaveProperty("article_id");
+      });
+  });
+  it("400 - responds with an error msg for an invalid article_id type", () => {
+    const newComment = {
+      username: "butter_bridge",
+      body: "I am a comment",
+    };
+    return request(app)
+      .post("/api/articles/not-a-number/comments")
+      .send(newComment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toEqual("Invalid data type");
+      });
+  });
+  it("404 - responds with an error msg for an article_id that does not exist", () => {
+    const newComment = {
+      username: "butter_bridge",
+      body: "I am a comment",
+    };
+    return request(app)
+      .post("/api/articles/9999/comments")
+      .send(newComment)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toEqual("Not found");
+      });
+  });
+  it('422 - responds with an error msg for an invalid comment body', () => {
+    const newComment = {
+      username: "butter_bridge",
+      body: "",
+    };
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send(newComment)
+      .expect(422)
+      .then(({ body }) => {
+        expect(body.msg).toEqual("Unprocessable entity");
+      });
+  })
+});

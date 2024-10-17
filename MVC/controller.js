@@ -1,4 +1,4 @@
-const { fetchTopics, fetchApi, fetchArticleById, fetchArticles, fetchCommentsByArticleId } = require("./model");
+const { fetchTopics, fetchApi, fetchArticleById, fetchArticles, checkValidArticleId, fetchCommentsByArticleId, addCommentByArticleId } = require("./model");
 
 const getTopics = (req, res) => {
     return fetchTopics().then((topics) => {
@@ -12,7 +12,11 @@ const getApi = (req, res) => {
     })
 }
 const getArticleById = (req, res, next) => {
-    return fetchArticleById(req.params.article_id).then((article) => {
+    checkValidArticleId(req.params.article_id)
+    .then(() => {
+        return fetchArticleById(req.params.article_id)
+    })
+   .then((article) => {
         res.status(200).send(article)
     })
     .catch((err) => {
@@ -30,7 +34,11 @@ const getArticles = (req, res, next) => {
 }
 
 const getCommentsByArticleId = (req, res, next) => {
-    return fetchCommentsByArticleId(req.params.article_id).then((comments) => {
+    checkValidArticleId(req.params.article_id)
+    .then(() => {
+        return fetchCommentsByArticleId(req.params.article_id)
+    })
+    .then((comments) => {
         res.status(200).send({ comments: comments })
     })
     .catch((err) => {
@@ -38,10 +46,30 @@ const getCommentsByArticleId = (req, res, next) => {
     })
 }
 
+const postCommentsByArticleId = (req, res, next) => {
+  const { username, body } = req.body;
+  checkValidArticleId(req.params.article_id)
+    .then(() => {
+      if (!username || !body) {
+        return Promise.reject({ status: 422, msg: "Unprocessable entity" });
+      } else {
+        return addCommentByArticleId(req.params.article_id, { username, body });
+      }
+    })
+    .then((comment) => {
+      res.status(201).send({ comment: comment });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+
 module.exports = { 
     getTopics,
     getApi,
     getArticleById,
     getArticles,
-    getCommentsByArticleId
+    getCommentsByArticleId,
+    postCommentsByArticleId
 }

@@ -49,6 +49,18 @@ const fetchArticles = () => {
         })
 };
 
+const checkValidArticleId = (articleId) => {
+    return db
+        .query("SELECT * FROM articles WHERE article_id = $1;", [articleId])
+        .then(({ rows }) => {
+            if (rows.length === 0) {
+                return Promise.reject({ status: 404, msg: "Not found" })
+            } else if (rows.length > 0) {
+                return true
+            }
+        })
+}
+
 const fetchCommentsByArticleId = (articleId) => {
     return db
         .query(`SELECT
@@ -70,10 +82,27 @@ const fetchCommentsByArticleId = (articleId) => {
         })
 };
 
+const addCommentByArticleId = (articleId, {username, body}) => {
+    const created_at = new Date()
+    return db
+        .query(`INSERT INTO comments
+            (body, votes, author, article_id, created_at)
+            VALUES
+            ($1, $2, $3, $4, $5)
+            RETURNING *;`, [body, 0, username, articleId, created_at])
+        .then(({ rows }) => {
+            return rows[0];
+        })
+};
+
+
+
 module.exports = {
     fetchTopics,
     fetchApi,
     fetchArticleById,
     fetchArticles,
-    fetchCommentsByArticleId
+    checkValidArticleId,
+    fetchCommentsByArticleId,
+    addCommentByArticleId
 }
