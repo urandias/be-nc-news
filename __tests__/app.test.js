@@ -71,7 +71,7 @@ describe("GET /api/articles/:articleId", () => {
       .get("/api/articles/not-a-number")
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toEqual("Invalid data type");
+        expect(body.msg).toBe("Invalid data type");
       });
   });
   it("404 - responds with an error msg for an article_id that does not exist", () => {
@@ -79,7 +79,7 @@ describe("GET /api/articles/:articleId", () => {
       .get("/api/articles/9999")
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toEqual("Not found");
+        expect(body.msg).toBe("Not found");
       });
   });
 });
@@ -153,7 +153,7 @@ describe("GET /api/articles/:article_id/comments", () => {
       .get("/api/articles/not-a-number/comments")
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toEqual("Invalid data type");
+        expect(body.msg).toBe("Invalid data type");
       });
   });
   it("404 - responds with an error msg for an article_id that does not exist", () => {
@@ -161,7 +161,7 @@ describe("GET /api/articles/:article_id/comments", () => {
       .get("/api/articles/9999/comments")
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toEqual("Not found");
+        expect(body.msg).toBe("Not found");
       });
   });
 });
@@ -196,7 +196,7 @@ describe("POST /api/articles/:article_id/comments", () => {
       .send(newComment)
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toEqual("Invalid data type");
+        expect(body.msg).toBe("Invalid data type");
       });
   });
   it("404 - responds with an error msg for an article_id that does not exist", () => {
@@ -209,7 +209,7 @@ describe("POST /api/articles/:article_id/comments", () => {
       .send(newComment)
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toEqual("Not found");
+        expect(body.msg).toBe("Not found");
       });
   });
   it('422 - responds with an error msg for an invalid comment body', () => {
@@ -222,7 +222,60 @@ describe("POST /api/articles/:article_id/comments", () => {
       .send(newComment)
       .expect(422)
       .then(({ body }) => {
-        expect(body.msg).toEqual("Unprocessable entity");
+        expect(body.msg).toBe("Unprocessable entity");
       });
   })
 });
+
+describe('PATCH /api/articles/:article_id', () => {
+  it('200 - responds with an object containing the updated article, with an increase in votes', () => {
+    const newArticle = {
+      inc_votes: 10
+    }
+    return request(app)
+      .patch('/api/articles/1')
+      .send(newArticle)
+      .expect(200)
+      .then(({ body }) => {
+        const { article } = body
+        expect(article.votes).toBe(110)
+      })
+  })
+  it('200 - responds with an object containing the updated article, with a decrease in votes', () => {
+    const newArticle = {
+      inc_votes: -90
+    }
+    return request(app)
+      .patch('/api/articles/1')
+      .send(newArticle)
+      .expect(200)
+      .then(({ body }) => {
+        const { article } = body
+        expect(article.votes).toBe(10)
+      })
+  })
+  it('400 - responds with an error msg for an invalid article_id type', () => {
+    const newArticle = {
+      inc_votes: 10
+    }
+    return request(app)
+      .patch('/api/articles/not-a-number')
+      .send(newArticle)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Invalid data type')
+      })
+  })
+  it('404 - responds with an error msg for an article_id that does not exist', () => {
+    const newArticle = {
+      inc_votes: 10
+    }
+    return request(app)
+    .patch('/api/articles/9999')
+    .send(newArticle)
+    .expect(404)
+    .then(({ body }) => {
+      expect(body.msg).toBe('Not found')
+    })
+  })
+})
