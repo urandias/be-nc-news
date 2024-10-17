@@ -1,4 +1,4 @@
-const { fetchTopics, fetchApi, fetchArticleById, fetchArticles, checkValidArticleId, fetchCommentsByArticleId, addCommentByArticleId } = require("./model");
+const { fetchTopics, fetchApi, fetchArticleById, fetchArticles, checkValidArticleId, fetchCommentsByArticleId, addCommentByArticleId, fetchPatchedArticleById } = require("./model");
 
 const getTopics = (req, res) => {
     return fetchTopics().then((topics) => {
@@ -48,6 +48,7 @@ const getCommentsByArticleId = (req, res, next) => {
 
 const postCommentsByArticleId = (req, res, next) => {
   const { username, body } = req.body;
+  
   checkValidArticleId(req.params.article_id)
     .then(() => {
       if (!username || !body) {
@@ -64,6 +65,21 @@ const postCommentsByArticleId = (req, res, next) => {
     });
 };
 
+const patchArticleById = (req, res, next) => {
+    const { article_id } = req.params
+    const { inc_votes } = req.body
+
+    checkValidArticleId(req.params.article_id)
+    .then(() => {
+        return fetchPatchedArticleById(article_id, inc_votes)
+    })
+    .then((article) => {
+        res.status(200).send({ article: article })
+    })
+    .catch((err) => {
+        next(err)
+    })
+}
 
 module.exports = { 
     getTopics,
@@ -71,5 +87,6 @@ module.exports = {
     getArticleById,
     getArticles,
     getCommentsByArticleId,
-    postCommentsByArticleId
+    postCommentsByArticleId,
+    patchArticleById
 }
