@@ -108,6 +108,28 @@ const fetchPatchedArticleById = (articleId, inc_votes) => {
         })
 };
 
+const checkValidCommentId = (comment_id) => {
+    return db
+        .query("SELECT * FROM comments WHERE comment_id = $1;", [comment_id])
+        .then(({ rows }) => {
+            if (rows.length === 0) {
+                return Promise.reject({ status: 404, msg: "Not found" })
+            } else if (rows.length > 0) {
+                return true
+            }
+        })
+}
+
+const removeCommentsById = (comment_id) => {
+    return db
+        .query(`DELETE FROM comments WHERE comment_id = $1;`, [comment_id])
+        .then(({ rows }) => {
+            return rows
+        })
+        .catch( (err) => {
+            return Promise.reject({ status: 404, msg: "Not found" })
+        })
+};
 
 
 module.exports = {
@@ -118,5 +140,7 @@ module.exports = {
     checkValidArticleId,
     fetchCommentsByArticleId,
     addCommentByArticleId,
-    fetchPatchedArticleById
+    fetchPatchedArticleById,
+    checkValidCommentId,
+    removeCommentsById
 }
