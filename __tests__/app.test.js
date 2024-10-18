@@ -279,3 +279,30 @@ describe('PATCH /api/articles/:article_id', () => {
     })
   })
 })
+
+describe('DELETE /api/comments/:comment_id', () => {
+  it('204 - responds with no content when comment is deleted successfully', () => {
+    return request(app)
+    .delete('/api/comments/1')
+    .expect(204)
+    .then(({ body }) => {
+      expect(body).toEqual({})
+    })
+  })
+  it('404 - responds with an error msg for an comment_id that does not exist', () => {
+    return request(app)
+    .delete('/api/comments/9999')
+    .expect(404)
+    .then(({ body }) => {
+      expect(body.msg).toBe('Not found')
+    })
+  })
+  it('400 - responds with an error msg for an invalid comment_id type', () => {
+    return request(app)
+    .delete('/api/comments/not-a-number')
+    .expect(400)
+    .then(({ body }) => {
+      expect(body.msg).toBe('Invalid data type')
+    })
+  })
+})
