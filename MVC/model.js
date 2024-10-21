@@ -126,11 +126,21 @@ const removeCommentsById = (comment_id) => {
         .then(({ rows }) => {
             return rows
         })
-        .catch( (err) => {
+        .catch((err) => {
             return Promise.reject({ status: 404, msg: "Not found" })
         })
 };
 
+const fetchAllUsers = () => {
+    return db
+        .query(`SELECT * FROM users;`)
+        .then(({ rows }) => {
+            return rows
+        })
+        .catch((err) => {
+            return Promise.reject({ status: 404, msg: "Not found" })
+        })
+}
 
 module.exports = {
     fetchTopics,
@@ -142,5 +152,6 @@ module.exports = {
     addCommentByArticleId,
     fetchPatchedArticleById,
     checkValidCommentId,
-    removeCommentsById
+    removeCommentsById,
+    fetchAllUsers
 }
