@@ -98,7 +98,6 @@ const deleteCommentsById = (req, res, next) => {
 
 const getAllUsers = (req, res, next) => {
     return fetchAllUsers().then((users) => {
-        console.log(users)
         res.status(200).send({ users: users })
     })
 }
