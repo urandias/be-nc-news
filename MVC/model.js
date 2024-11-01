@@ -28,17 +28,7 @@ const fetchArticleById = (articleId) => {
         })
 };
 
-const fetchArticles = (sort_by = 'created_at', order = 'desc') => {
-    const validColumns = ['author', 'title', 'article_id', 'topic', 'created_at', 'votes', 'article_img_url', 'comment_count'];
-    const validOrders = ['asc', 'desc'];
-
-    if (!validColumns.includes(sort_by)) {
-        sort_by = 'created_at';
-    }
-    if (!validOrders.includes(order)) {
-        order = 'desc';
-    }
-
+const fetchArticles = () => {
     return db
         .query(`SELECT 
                 articles.author,
@@ -53,7 +43,7 @@ const fetchArticles = (sort_by = 'created_at', order = 'desc') => {
             LEFT JOIN comments
             ON articles.article_id = comments.article_id
             GROUP BY articles.article_id
-            ORDER BY ${sort_by} ${order};`)
+            ORDER BY articles.created_at DESC;`)
         .then(({ rows }) => {
             return rows;
         })
