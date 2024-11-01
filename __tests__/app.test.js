@@ -5,6 +5,7 @@ const data = require("../db/data/test-data");
 const db = require("../db/connection");
 const endpoints = require("../endpoints.json");
 const topics = require("../db/data/test-data/topics");
+require('jest-sorted')
 
 beforeEach(() => seed(data));
 afterAll(() => db.end());
@@ -120,6 +121,26 @@ describe("GET /api/articles", () => {
 });
 
 describe("GET /api/articles/:article_id/comments", () => {
+  it("should return a status code of 200 and an ordered array of comments", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then(({ body }) => {
+        const { comments } = body;
+        expect(comments).toBeSortedBy("created_at", { descending: true, coerce: true });
+        comments.forEach((comment) => {
+          expect(comment.article_id).toBe(1);
+          expect(comment).toEqual({
+            comment_id: expect.any(Number),
+            body: expect.any(String),
+            article_id: expect.any(Number),
+            author: expect.any(String),
+            votes: expect.any(Number),
+            created_at: expect.any(String),
+          });
+        });
+      });
+  });
   it("200 - should respond with an array of comments with the correct keys", () => {
     return request(app)
       .get("/api/articles/1/comments")

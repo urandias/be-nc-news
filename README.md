@@ -11,3 +11,5 @@ This portfolio project was created as part of a Digital Skills Bootcamp in Softw
 ---
 
 add .env.development and .env.test files into this repo
+
+npm install jest-sorted --save-dev

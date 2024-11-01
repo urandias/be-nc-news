@@ -28,7 +28,19 @@ const fetchArticleById = (articleId) => {
         })
 };
 
-const fetchArticles = () => {
+const fetchArticles = (sort_by = 'created_at', order = 'desc') => {
+    const validColumns = ['author', 'title', 'article_id', 'topic', 'created_at', 'votes', 'comment_count'];
+    const validOrders = ['asc', 'ASC', 'desc', 'DESC'];
+
+    if (!validColumns.includes(sort_by)) {
+        return Promise.reject({ status: 400, msg: "Invalid sort query" });
+    }
+
+    if (!validOrders.includes(order)) {
+        return Promise.reject({ status: 400, msg: "Invalid order query" });
+    }
+
+
     return db
         .query(`SELECT 
                 articles.author,
@@ -43,7 +55,7 @@ const fetchArticles = () => {
             LEFT JOIN comments
             ON articles.article_id = comments.article_id
             GROUP BY articles.article_id
-            ORDER BY articles.created_at DESC;`)
+            ORDER BY ${sort_by} ${order};`)
         .then(({ rows }) => {
             return rows;
         })
