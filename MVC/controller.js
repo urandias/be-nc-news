@@ -25,12 +25,15 @@ const getArticleById = (req, res, next) => {
 }
 
 const getArticles = (req, res, next) => {
-    return fetchArticles().then((articles) => {
-        res.status(200).send({ articles: articles })
-    })
-    .catch((err) => {
-        next(err)
-    })
+    const { sort_by, order } = req.query;
+    
+    return fetchArticles(sort_by, order)
+        .then((articles) => {
+            res.status(200).send({ articles: articles })
+        })
+        .catch((err) => {
+            next(err)
+        })
 }
 
 const getCommentsByArticleId = (req, res, next) => {

@@ -32,19 +32,14 @@ app.use((err, req, res, next) => {
 })
 
 app.use((err, req, res, next) => {
-    if (err.status === 404) {
-        res.status(404).send({ msg: 'Not found' })
+    if (err.status && err.msg) {
+        res.status(err.status).send({ msg: err.msg })
     } else next(err)
 })
 
 app.use((err, req, res, next) => {
-    if(err.status === 422) {
-        res.status(422).send({ msg: 'Unprocessable entity' })
-    } else next(err)
-})
-
-app.use((err, req, res, next) => {
-    res.status(500).send({ msg: 'Internal server error' })
+    console.log(err);
+    res.status(500).send({ msg: 'Internal server error' })
 })
 
 

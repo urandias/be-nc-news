@@ -346,3 +346,108 @@ describe("GET /api/users", () => {
       });
   });
 });
+
+// describe("GET /api/articles (sorting queries)", () => {
+//   describe("sort_by query parameter", () => {
+//     it("200 - defaults to sort by created_at in descending order when no queries provided", () => {
+//       return request(app)
+//         .get("/api/articles")
+//         .expect(200)
+//         .then(({ body }) => {
+//           expect(body.articles).toBeSortedBy("created_at", { descending: true });
+//         });
+//     });
+    
+//     it("200 - sorts by author when specified", () => {
+//       return request(app)
+//         .get("/api/articles?sort_by=author")
+//         .expect(200)
+//         .then(({ body }) => {
+//           expect(body.articles).toBeSortedBy("author", { descending: true });
+//         });
+//     });
+
+//     it("200 - sorts by title when specified", () => {
+//       return request(app)
+//         .get("/api/articles?sort_by=title")
+//         .expect(200)
+//         .then(({ body }) => {
+//           expect(body.articles).toBeSortedBy("title", { descending: true });
+//         });
+//     });
+
+//     it("200 - sorts by article_id when specified", () => {
+//       return request(app)
+//         .get("/api/articles?sort_by=article_id")
+//         .expect(200)
+//         .then(({ body }) => {
+//           expect(body.articles).toBeSortedBy("article_id", { descending: true });
+//         });
+//     });
+
+//     it("200 - sorts by votes when specified", () => {
+//       return request(app)
+//         .get("/api/articles?sort_by=votes")
+//         .expect(200)
+//         .then(({ body }) => {
+//           expect(body.articles).toBeSortedBy("votes", { descending: true });
+//         });
+//     });
+
+//     it("200 - sorts by comment_count when specified", () => {
+//       return request(app)
+//         .get("/api/articles?sort_by=comment_count")
+//         .expect(200)
+//         .then(({ body }) => {
+//           expect(body.articles).toBeSortedBy("comment_count", { descending: true });
+//         });
+//     });
+
+//     it("400 - responds with error when sort_by column doesn't exist", () => {
+//       return request(app)
+//         .get("/api/articles?sort_by=not_a_column")
+//         .expect(400)
+//         .then(({ body }) => {
+//           expect(body.msg).toBe("Invalid sort query");
+//         });
+//     });
+//   });
+// })
+
+//   describe("order query parameter", () => {
+//     it("200 - accepts ascending order", () => {
+//       return request(app)
+//         .get("/api/articles?order=asc")
+//         .expect(200)
+//         .then(({ body }) => {
+//           expect(body.articles).toBeSortedBy("created_at");
+//         });
+//     });
+
+//     it("200 - accepts descending order", () => {
+//       return request(app)
+//         .get("/api/articles?order=desc")
+//         .expect(200)
+//         .then(({ body }) => {
+//           expect(body.articles).toBeSortedBy("created_at", { descending: true });
+//         });
+//     });
+
+//     it("200 - works with both sort_by and order queries together", () => {
+//       return request(app)
+//         .get("/api/articles?sort_by=title&order=asc")
+//         .expect(200)
+//         .then(({ body }) => {
+//           expect(body.articles).toBeSortedBy("title");
+//         });
+//     });
+
+//     it("400 - responds with error for invalid order value", () => {
+//       return request(app)
+//         .get("/api/articles?order=invalid_order")
+//         .expect(400)
+//         .then(({ body }) => {
+//           expect(body.msg).toBe("Invalid order query");
+//         });
+//     });
+//   });
